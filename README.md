@@ -1,0 +1,1 @@
+## Chat Room App to create rooms & initiate discussions, Django based solution for the devs to collaborate
