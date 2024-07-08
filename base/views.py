@@ -7,12 +7,14 @@ from django.contrib.auth.models import User
 from .forms import RoomForm
 from django.contrib.auth import authenticate,login,logout
 from django.http import HttpResponse
+from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 # Dump Business logic 
 
 
 def loginView(request):
 
+    page = 'login'
     if request.user.is_authenticated:
         return redirect('home')
 
@@ -32,7 +34,7 @@ def loginView(request):
             return redirect('home')
         else:
             messages.error(request, 'Username or password does not exist')
-    context = {}
+    context = {'page': page}
     return render(request, 'base/login_register.html', context)
 
 def logoutView(request):
@@ -55,8 +57,22 @@ def room(request,pk):
     return render(request, 'base/room.html', context)
 
 def registerView(request):
-    page = 'register'
-    return render(request,'base/login_register.html',page)
+    form = UserCreationForm()
+    
+    # page = 'register'
+    # context = {'page': page}
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request,user)
+            return redirect('home')
+        else:
+            messages.error('Error occurred during registartion')
+
+    return render(request,'base/login_register.html',{'form':form})
 
 @login_required(login_url='login')
 def createRoom(request):
