@@ -86,6 +86,11 @@ def registerView(request):
 
     return render(request,'base/login_register.html',{'form':form})
 
+def userProfile(request,pk):
+    user = User.objects.get(id=pk)
+    context = {'user': user}
+    return render(request, 'base/profile.html', context)
+
 @login_required(login_url='login')
 def createRoom(request):
     form = RoomForm()
